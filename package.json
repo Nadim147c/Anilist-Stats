@@ -1,0 +1,30 @@
+{
+    "name": "anilist-stats",
+    "version": "1.0.0",
+    "description": "A tool for making dynamic anime state from anilist",
+    "main": "index.js",
+    "scripts": {
+        "start": "node dist/.",
+        "dev": "ts-node-dev src/.",
+        "build": "tsc",
+        "watch": "tsc -w"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "anilist-wrapper": "^0.0.24",
+        "canvas": "^2.10.1",
+        "express": "^4.18.2",
+        "node-schedule": "^2.1.0"
+    },
+    "devDependencies": {
+        "@types/express": "^4.17.14",
+        "@types/node-schedule": "^2.1.0",
+        "dotenv": "^16.0.3",
+        "ts-node": "^10.9.1",
+        "ts-node-dev": "^2.0.0",
+        "tslib": "^2.4.0",
+        "typescript": "^4.8.4"
+    }
+}
