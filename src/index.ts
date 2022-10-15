@@ -10,6 +10,8 @@ try {
     console.error(error)
 }
 
+updateImage()
+
 const server = express()
 
 server.get("/", (_: any, res: any) => {

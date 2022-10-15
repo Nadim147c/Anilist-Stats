@@ -16,7 +16,8 @@ export const progressBar = (
     const pas = com + PAUSED / total
     const dro = pas + DROPPED / total
 
-    ctx.lineWidth = 1
+    ctx.lineWidth = 3
+    ctx.strokeStyle = colors.line
 
     const pi = Math.PI
     const r = h / 2
@@ -33,6 +34,7 @@ export const progressBar = (
     ctx.stroke()
     ctx.clip()
 
+    ctx.lineWidth = 1
     const drawPart = (amount: number, color: string) => {
         ctx.beginPath()
 

@@ -6,6 +6,7 @@ import { writeListCount } from "./images/write-list-count"
 import { fitCover } from "./images/fit-cover"
 import { formatNum } from "./images/format-number"
 import { colors } from "./colors"
+import { getImage } from "./images/get-image"
 
 export type statsType = { CURRENT: number; COMPLETED: number; PAUSED: number; DROPPED: number; PLANNING: number }
 export const updateImage = async () => {
@@ -13,8 +14,10 @@ export const updateImage = async () => {
 
     console.log("Fetching user")
     const user = (await client.fetchUser().catch(console.error)) as User
+
     console.log("Fetching anime list")
     const animeList = (await client.fetchUserAnimeList().catch(console.error)) as MediaListCollection
+
     console.log("Fetching manga list")
     const mangaList = (await client.fetchUserMangaList().catch(console.error)) as MediaListCollection
 
@@ -33,15 +36,18 @@ export const updateImage = async () => {
 
     try {
         const imgURL = user.bannerImage ?? user.avatar?.large ?? "./images/bg.jpg"
-        const image = await loadImage(imgURL)
+        const image = await getImage(imgURL)
         fitCover(canvas, ctx, image)
     } catch (error) {
         // ignore lol
     }
 
-    ctx.fillStyle = colors.bg
-
-    ctx.fillRect(0, 0, canvas.width, canvas.height)
+    try {
+        const image = await loadImage("images/overlay.png")
+        ctx.drawImage(image, 0, 0)
+    } catch (error) {
+        //ignore again lol
+    }
 
     ctx.fillStyle = colors.accent
     ctx.font = "22px Rubik"
@@ -52,13 +58,13 @@ export const updateImage = async () => {
     ctx.fillText(stats.anime.count.toString(), x, animeY)
     ctx.fillText((stats.anime.minutesWatched / (60 * 24)).toFixed(2), x * 2, animeY)
     ctx.fillText(formatNum(stats.anime.episodesWatched), x * 3, animeY)
-    ctx.fillText(stats.anime.meanScore.toString(), x * 4, animeY)
+    ctx.fillText((stats.anime.meanScore / 10).toFixed(1), x * 4, animeY)
 
-    let mangaY = (canvas.height / 5) * 3.5
+    let mangaY = (canvas.height / 6) * 4
     ctx.fillText(stats.manga.count.toString(), x, mangaY)
     ctx.fillText(formatNum(stats.manga.volumesRead), x * 2, mangaY)
     ctx.fillText(formatNum(stats.manga.chaptersRead), x * 3, mangaY)
-    ctx.fillText(stats.manga.meanScore.toString(), x * 4, mangaY)
+    ctx.fillText((stats.manga.meanScore / 10).toFixed(1), x * 4, mangaY)
 
     ctx.font = "12px Rubik"
     ctx.fillStyle = "white"
@@ -74,11 +80,11 @@ export const updateImage = async () => {
     ctx.fillText("Chapters", x * 3, mangaY)
     ctx.fillText("Main Score", x * 4, mangaY)
 
-    progressBar(ctx, 10, canvas.height / 2 - 10, canvas.width - 20, 15, animeCount)
-    writeListCount(ctx, canvas.width / 2, canvas.height / 2 - 20, animeCount)
+    progressBar(ctx, 30, canvas.height / 2 - 35, canvas.width - 60, 15, animeCount)
+    writeListCount(ctx, canvas.width / 2, canvas.height / 2 - 45, animeCount)
 
-    progressBar(ctx, 10, canvas.height - 30, canvas.width - 20, 15, mangaCount)
-    writeListCount(ctx, canvas.width / 2, canvas.height - 40, mangaCount)
+    progressBar(ctx, 30, canvas.height - 40, canvas.width - 60, 15, mangaCount)
+    writeListCount(ctx, canvas.width / 2, canvas.height - 50, mangaCount)
 
     fs.writeFileSync("./images/render.png", canvas.toBuffer())
     console.log("Image Has been updated.")
